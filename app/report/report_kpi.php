@@ -197,7 +197,7 @@ if (isset($_POST['export'])) {
                             $i++; ?>
                             <tr>
                                 <td><?php echo $i; ?></td>
-                                <td><a href="?p=case_all_service&key=<?php echo $show_total->ticket; ?>" target="_blank"><?php echo $show_total->ticket; ?></a> </td>
+                                <td><a href="?p=maintenance_case_all_service&key=<?php echo $show_total->ticket; ?>" target="_blank"><?php echo $show_total->ticket; ?></a> </td>
                                 <!-- <td><?php echo @getemployee($show_total->user_key); ?></td>
                                 <td><?php echo @getemployee_department($show_total->user_key); ?></td> -->
                                 <td><?php echo $show_total->se_asset; ?></td>
@@ -214,7 +214,7 @@ if (isset($_POST['export'])) {
                                 <td><?php echo @prefixbranch($show_total->se_location); ?></td>
                                 <td><?php echo @service($show_total->se_id); ?></td>
                                 <td><?php echo @prefixConvertorServiceList($show_total->se_li_id); ?></td>
-                                <td></td>
+                                <td><?php echo getSLAcode($show_total->se_li_id); ?></td>
                                 <td><?php echo $show_total->se_other; ?></td>
                                 <td>
                                     <?php

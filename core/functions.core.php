@@ -56,6 +56,15 @@ function searchDateSuccess($ticket){
     }
 }
 
+function getSLAcode($se_li_id){
+    $getdata = new clear_db();
+    $connect = $getdata->my_sql_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+    mysqli_set_charset($connect, 'utf8');
+    $getSLA = $getdata->my_sql_query($connect, null,'service_list', "se_li_id='" . $se_li_id. "'");
+    $getshow = $getSLA->SLA_Code;
+    return $getshow;
+}
+
 function prefixConvertorService($prefixservice)
 {
     $getdata = new clear_db();
