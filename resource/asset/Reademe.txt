@@ -1,0 +1,3 @@
+Folder "delevymo" = ลบข้อมูลทุก ๆ เดือน
+Folder "file_pdf_now" = ไฟล์ PDF ที่อัพโหลดในปัจจุน
+Folder "file_pic_now" = ไฟล์รูปภาพที่มีการย่อขนาดแล้ว
