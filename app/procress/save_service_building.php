@@ -91,8 +91,14 @@ if (isset($_POST['save_casebu'])) {
         $namecall = $name_user;
         // $approve = $_POST['approve'];
         $setNameMg = COUNT($chkManager) == 0 ? '-' : getemployee($chkManager->manager_user_key);
-        $location =  !empty($_POST['location']) ? htmlspecialchars($_POST['location']) : $_POST['gt_department'];;
+        $location = prefixbranch($mapBranch);
         $date_send = date('d/m/Y');
+
+        if(!empty($_POST['namecall'])){
+            $req = "แจ้งแทน : " . getemployee($_POST['namecall']);
+        } else {
+            $req = "ผู้แจ้ง : {$namecall}";
+        }
 
         $line_token = $getalert->alert_line_token; // Token
         $line_text = "
@@ -101,7 +107,7 @@ if (isset($_POST['save_casebu'])) {
      ------------------------
      {$name_user}
      แผนก : {$department}
-     ผู้แจ้ง : {$namecall}
+     {$req}
      สาขา : {$location}
      ผู้อนุมัติ : {$setNameMg}
      ------------------------
