@@ -813,6 +813,26 @@ $(function () {
     });
   });
 
+  $('#approve-mt-user-frm').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var recipient = button.data('whatever') // Extract info from data-* attributes
+    var modal = $(this);
+    var dataString = 'key=' + recipient;
+
+    $.ajax({
+      type: "GET",
+      url: "otherfrm/approve-mt-user_frm.php",
+      data: dataString,
+      cache: false,
+      success: function (data) {
+        modal.find('.approve-mt-user-frm').html(data);
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    });
+  });
+
 
 
   //----------------------------------------------------

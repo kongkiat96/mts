@@ -25,12 +25,15 @@ if (isset($_POST['save_offcase'])) {
 
         $name_mt = implode(",", $_POST['name_mt']);
 
-        if($_POST['work_flag'] == 'success'){
-            $setFlag = 'work_success';
-        } else {
-            $setFlag = $_POST['work_flag'];
-        }
+        // if($_POST['work_flag'] == 'success'){
+        //     $setFlag = 'work_success';
+        // } else {
+        //     $setFlag = $_POST['work_flag'];
+        // }
 
+        if($_POST['off_case_status'] == '2e34609794290a770cb0349119d78d21'){
+            $setFlag = 'user_approve';
+        }
         $getdata->my_sql_update(
             $connect,
             "building_list",

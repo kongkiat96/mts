@@ -130,6 +130,11 @@ function prefixbranch($prefixbranch)
     $connect = $getdata->my_sql_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
     mysqli_set_charset($connect, 'utf8');
     $getbranch = $getdata->my_sql_query($connect, null, 'branch', "id ='" . $prefixbranch . "'");
+    if($getbranch->branch_name == null){
+        $getbranch = $getdata->my_sql_query($connect, null, 'department_name', "id ='" . $prefixbranch . "'");
+        return $getbranch->department_name;
+        
+    }
 
     return $getbranch->branch_name;
 }

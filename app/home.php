@@ -50,6 +50,13 @@ echo @$alert;
                 $('#list_check_ct').html(data);
             }
         });
+
+        $.ajax({
+            url: 'auto/list_checkwork_user.php',
+            success: function(data) {
+                $('#list_checkwork_user').html(data);
+            }
+        });
     }
 
     $(document).ready(function() {
@@ -80,7 +87,12 @@ echo @$alert;
                             <select class="form-control select2bs4" style="width: 100%;" name="se_id" id="se_ids" onchange="getBuildingList(this.value)" required>
                                 <option value="">--- เลือก ประเภท ---</option>
                                 <?php
-                                $getprefix = $getdata->my_sql_select($connect, NULL, "service", "se_id AND se_status ='1' ORDER BY se_sort");
+                                if ($_SESSION['uclass'] != 1) {
+                                    $map = "('admin','user')";
+                                } else {
+                                    $map = "('user')";
+                                }
+                                $getprefix = $getdata->my_sql_select($connect, NULL, "service", "se_id AND se_status ='1' AND use_case IN $map ORDER BY se_sort");
                                 while ($showservice = mysqli_fetch_object($getprefix)) {
                                     echo '<option value="' . $showservice->se_id . '">' . $showservice->se_name . '</option>';
                                 }
@@ -295,6 +307,25 @@ echo @$alert;
     </div>
 </div>
 
+<div class="modal fade" id="approve-mt-user-frm" role="dialog" aria-labelledby="approve-mt-user-frm" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="post" enctype="multipart/form-data" class="was-validated" id="waitsave2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">เปลี่ยนแปลง</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="approve-mt-user-frm">
+
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Cancel -->
 
 <div class="modal fade" id="off_case_building" role="dialog" aria-labelledby="off_case_building" aria-hidden="true">
@@ -449,6 +480,13 @@ echo @$alert;
                         <li class="nav-item">
                             <a class="nav-link" id="check-list-ct-tab" data-toggle="tab" href="#check-list-ct" role="tab" aria-controls="check-list-ct" aria-selected="false">
                                 รายการตรวจงานซ่อม เฟอร์นิเจอร์</a>
+                        </li>
+                    <?php } ?>
+
+                    <?php if ($_SESSION['uclass'] == '1') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="list-check-user-tab" data-toggle="tab" href="#list-check-user" role="tab" aria-controls="list-check-user" aria-selected="false">
+                                รายการตรวจงานซ่อม</a>
                         </li>
                     <?php } ?>
                 </ul>
@@ -656,6 +694,36 @@ echo @$alert;
                         </div>
                     </div>
 
+                    <div class="tab-pane fade" id="list-check-user" role="tabpanel" aria-labelledby="list-check-user-tab">
+                        <div class="mt-5">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="basic-data-table">
+                                        <table class="table nowrap text-center" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Case IDs</th>
+                                                    <th>Ticket</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Status</th>
+                                                    <th>Date success</th>
+
+                                                    <th>จัดการ</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="list_checkwork_user">
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
             </div>
@@ -692,7 +760,7 @@ echo @$alert;
                     if ($_SESSION['uclass'] == 3 || $_SESSION['uclass'] == 2) {
                         $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "card_status NOT IN ('wait_approve','approve') AND manager_approve_status = 'Y' ORDER BY ID desc LIMIT 100");
                     } else {
-                        $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "card_status NOT IN ('wait_approve','approve') AND manager_approve_status = 'Y' AND (user_key = '" . $_SESSION['ukey'] . "' OR manager_approve = '" . $_SESSION['ukey'] . "') ORDER BY ID desc LIMIT 100");
+                        $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "card_status NOT IN ('wait_approve','approve') AND manager_approve_status = 'Y' AND (user_key = '" . $_SESSION['ukey'] . "' OR manager_approve = '" . $_SESSION['ukey'] . "') AND work_flag NOT IN ('user_approve') ORDER BY ID desc LIMIT 100");
                     }
 
                     while ($show_total = mysqli_fetch_object($get_total)) {
@@ -814,24 +882,24 @@ echo @$alert;
     });
 
     $('#reopen_case').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var recipient = button.data('whatever') // Extract info from data-* attributes
-            var modal = $(this);
-            var dataString = 'key=' + recipient;
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var recipient = button.data('whatever') // Extract info from data-* attributes
+        var modal = $(this);
+        var dataString = 'key=' + recipient;
 
-            $.ajax({
-                type: "GET",
-                url: "otherfrm/reopen_case.php",
-                data: dataString,
-                cache: false,
-                success: function(data) {
-                    modal.find('.reopen_case').html(data);
-                },
-                error: function(err) {
-                    console.log(err);
-                }
-            });
+        $.ajax({
+            type: "GET",
+            url: "otherfrm/reopen_case.php",
+            data: dataString,
+            cache: false,
+            success: function(data) {
+                modal.find('.reopen_case').html(data);
+            },
+            error: function(err) {
+                console.log(err);
+            }
         });
+    });
 
     // document.addEventListener('DOMContentLoaded', function() {
     //     // เรียกฟังก์ชันเมื่อมีการเปลี่ยนแปลงใน radio buttons

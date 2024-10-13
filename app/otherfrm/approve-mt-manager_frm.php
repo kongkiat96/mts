@@ -105,7 +105,7 @@ $get_admin = $getdata->my_sql_query($connect, NULL, "user", "user_key = '" . $_S
       //   $chkName = $chk_case->se_namecall;
       // }
       $search = $getdata->my_sql_query($connect, NULL, "employee", "card_key ='" . $chk_case->se_namecall . "'");
-      if (COUNT($search) == 0) {
+      if (!$search || !is_array($search) || COUNT($search) == 0) {
         $chkName = $chk_case->se_namecall;
       } else {
         $chkName = getemployee($chk_case->se_namecall);

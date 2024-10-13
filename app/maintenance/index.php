@@ -269,7 +269,7 @@ include_once 'procress/dataSave.php';
                         $i = 0;
                         // $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "ID AND card_status NOT IN ('2e34609794290a770cb0349119d78d21','57995055c28df9e82476a54f852bd214') OR card_status IS NULL ORDER BY ticket DESC");
                         // $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "date LIKE '%" . date('Y') . "%' AND card_status NOT IN ('wait_approve','approve','57995055c28df9e82476a54f852bd214') AND work_flag NOT IN ('work_success') OR card_status IS NULL OR card_status = 'approve_do' ORDER BY ID DESC");
-                        $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "date LIKE '%" . date('Y') . "%' AND card_status NOT IN ('wait_approve','approve','57995055c28df9e82476a54f852bd214') AND work_flag NOT IN ('work_success') OR card_status IS NULL OR card_status IN ('approve_do','wait_approve') ORDER BY ID DESC");
+                        $get_total = $getdata->my_sql_select($connect, NULL, "building_list", "date LIKE '%" . date('Y') . "%' AND card_status NOT IN ('wait_approve','approve','57995055c28df9e82476a54f852bd214') AND work_flag NOT IN ('work_success','success','user_approve') OR card_status IS NULL OR card_status IN ('approve_do','wait_approve') ORDER BY ID DESC");
                         while ($show_total = mysqli_fetch_object($get_total)) {
                             $i++;
                         ?>
@@ -337,7 +337,7 @@ include_once 'procress/dataSave.php';
                                     ?>
                                 </td>
                                 <td>
-                                    <?php echo !empty($show_total->name_mt) ? str_replace(",", ",<br> ", $show_total->name_mt) : '-';?>
+                                    <?php echo !empty($show_total->name_mt) ? str_replace(",", ",<br> ", $show_total->name_mt) : '-'; ?>
                                 </td>
                                 <td>
                                     <?php
@@ -368,12 +368,14 @@ include_once 'procress/dataSave.php';
                                     ?>
                                     <a href="maintenance/print_work.php?key=<?php echo @$show_total->ticket; ?>" target="_blank" class="btn btn-sm btn-outline-danger" data-toggle="toptitle" data-placement="top" title="พิมพ์ใบงาน"><i class="fa fa-print"></i></a>
                                     <?php if ($_SESSION['uclass'] == '3' || $_SESSION['uclass'] == '2') {
-                                         if (in_array($show_total->card_status, ['wait_approve'])) {
+                                        if (in_array($show_total->card_status, ['wait_approve'])) {
                                         } else {
-                                        echo '<a href="#" data-toggle="modal" data-target="#edit_case" data-whatever="' . @$show_total->ticket . '" class="btn btn-sm btn-secondary  btn-outline" data-top="toptitle" data-placement="top" title="ดำเนินการ"><i class="fa fa-edit"></i></a>';
+                                            echo '<a href="#" data-toggle="modal" data-target="#edit_case" data-whatever="' . @$show_total->ticket . '" class="btn btn-sm btn-secondary  btn-outline" data-top="toptitle" data-placement="top" title="ดำเนินการ"><i class="fa fa-edit"></i></a>';
                                         }
                                     }
                                     ?>
+                                    <a href="maintenance/export_pdf.php?key=<?php echo @$show_total->ticket; ?>" target="_blank" class="btn btn-sm btn-danger" data-toggle="toptitle" data-placement="top" title="พิมพ์ใบงาน"><i class="far fa-file-pdf"></i></a>
+
                                 </td>
                                 <td>
                                     <?php

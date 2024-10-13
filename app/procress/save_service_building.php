@@ -26,14 +26,16 @@ if (isset($_POST['save_casebu'])) {
 
         // $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "'");
 
-        $getApproveDep = in_array($_POST['se_id'], ['13', '16']) ? 'HR' : 'IT';
-            if (empty($_POST['approve'] || $_POST['approve'] == '-')) {
-                $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "' LIMIT 1");
-            } else if (!empty($_POST['approve'] || $_POST['approve'] != '-')) {
-                $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_POST['namecall'] . "' LIMIT 1");
-            } else {
-                $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "' LIMIT 1");
-            }
+        // $getApproveDep = in_array($_POST['se_id'], ['13', '16']) ? 'HR' : 'IT';
+        if (empty($_POST['approve'] || $_POST['approve'] == '-')) {
+            $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "' LIMIT 1");
+        } else if (!empty($_POST['approve'] || $_POST['approve'] != '-')) {
+            $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_POST['namecall'] . "' LIMIT 1");
+        } else {
+            $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "' LIMIT 1");
+        }
+        
+        $mapBranch = !empty($_POST['location']) ? htmlspecialchars($_POST['location']) : $_POST['department'];
 
         if (COUNT($chkManager) == 0) {
             $getdata->my_sql_insert($connect, "building_list", "
@@ -48,7 +50,7 @@ if (isset($_POST['save_casebu'])) {
         se_other = '" . htmlspecialchars($_POST['other']) . "',
         se_namecall = '" . $_SESSION['ukey'] . "',
         se_approve = '" . htmlspecialchars($_POST['approve']) . "',
-        se_location = '" . htmlspecialchars($_POST['location']) . "',
+        se_location = '" . $mapBranch . "',
         date = '" . date("Y-m-d") . "',
         time_start = '" . date("H:i:s") . "'");
         } else {
@@ -64,7 +66,7 @@ if (isset($_POST['save_casebu'])) {
             se_other = '" . htmlspecialchars($_POST['other']) . "',
             se_namecall = '" . $chkManager->user_key . "',
             se_approve = '" . getemployee($chkManager->manager_user_key) . "',
-            se_location = '" . htmlspecialchars($_POST['location']) . "',
+            se_location = '" . $mapBranch . "',
             card_status = 'wait_approve',
             manager_approve = '" . $chkManager->manager_user_key . "',
             manager_approve_status = 'N',
@@ -89,7 +91,7 @@ if (isset($_POST['save_casebu'])) {
         $namecall = $name_user;
         // $approve = $_POST['approve'];
         $setNameMg = COUNT($chkManager) == 0 ? '-' : getemployee($chkManager->manager_user_key);
-        $location = @prefixbranch($_POST['location']);
+        $location =  !empty($_POST['location']) ? htmlspecialchars($_POST['location']) : $_POST['gt_department'];;
         $date_send = date('d/m/Y');
 
         $line_token = $getalert->alert_line_token; // Token
@@ -360,6 +362,72 @@ if (isset($_POST['save_approve_success'])) {
         $line_token = $getalert->alert_line_token; // Token
         $line_text = "
          /*** อนุมัติปิดงานจาก MT Manager ***/
+         ------------------------
+         Ticket : $ticket
+         ------------------------
+         ผู้ดำเนินการ : $name_admin
+         สถานะ :  ดำเนินงานเรียบร้อย
+         ผู้แจ้ง : $namecall
+         สาขา : $location
+         รายละเอียด : $detail
+         ------------------------
+         วันที่: {$date_send}
+         เวลา: {$time_send}
+         ";
+
+        lineNotify($line_text, $line_token); // เรียกใช้ Functions line
+
+        $alert = $success;
+    }
+}
+
+if (isset($_POST['save_approve_user_success'])) {
+    if (!empty($_POST['approve_status'])) {
+        // $getFlag = $_POST['approve_status'] == "Y" ? '33831963cbe86c4e544c5a999984aa7b' : $_POST['approve_status'];
+
+        if ($_POST['approve_status'] == "Y") {
+            $getFlag = $_POST['set_status'];
+            $work_flag = 'user_success';
+            $mapText = " - ตรวจสอบงานเสร็จสิ้นจากผู้แจ้ง";
+        } else {
+            $getFlag = 'reject';
+            $work_flag = null;
+            $mapText = " - ตรวจสอบงานไม่เรียบร้อยจากผู้แจ้ง";
+        }
+
+        $getdata->my_sql_update(
+            $connect,
+            "building_list",
+            "card_status='" . $getFlag . "',
+            work_flag = '" . $work_flag . "',
+      date_update='" . date("Y-m-d") . "',
+      time_update='" . date("H:i:s") . "'", //เพิ่ม เวลา
+            "ticket='" . htmlspecialchars($_POST['card_key']) . "'"
+        );
+
+        $getdata->my_sql_insert(
+            $connect,
+            "building_comment",
+            "card_status='" . $getFlag . "',
+      admin_update='" . $name_key . "',
+      comment='" . $_POST['comment'] . $mapText . "',
+      date ='" . date("Y-m-d H:i:s") . "',
+      ticket='" . htmlspecialchars($_POST['card_key']) . "'"
+        );
+
+
+        // ส่งข้อมูลเข้าไลน์
+        $ticket = $_POST['ticket'];
+        $name_admin = $_POST['admin'];
+        $status = $_POST['off_case_status'];
+        $date_send = date('d/m/Y');
+        $time_send = date("H:i");
+        $namecall = @getemployee($_POST['namecall']);
+        $location = @prefixbranch($_POST['location']);
+        $detail = $_POST['detail'];
+        $line_token = $getalert->alert_line_token; // Token
+        $line_text = "
+         /*** ตรวจสอบงานจากผู้แจ้ง ***/
          ------------------------
          Ticket : $ticket
          ------------------------

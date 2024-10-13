@@ -224,6 +224,7 @@ if (isset($_POST['save_edit_service'])) {
 			$connect,
 			"service",
 			"se_name ='" . htmlspecialchars($_POST['edit_se_name']) . "',
+			use_case = '" . htmlspecialchars($_POST['edit_use_case']) . "',
 			se_sort = '" . htmlspecialchars($_POST['edit_se_sort']) . "'",
 			"se_id = '" . htmlspecialchars($_POST['se_id']) . "'"
 		);

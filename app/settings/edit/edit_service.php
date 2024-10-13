@@ -22,7 +22,17 @@ $getprefix_detail = $getdata->my_sql_query($connect, NULL, "service", "se_id='" 
 		</div>
 
 	</div>
-	<input hidden name="se_id" value="<?php echo @$getprefix_detail->se_id; ?>">
+	<div class="form-group row">
+		<div class="col-12">
+			<label for="edit_use_case">แสดงการเข้าถึง</label>
+			<select class="form-control select2bs4" name="edit_use_case" id="edit_use_case">
+				<option value="">--- เลือกข้อมูล ---</option>
+				<option value="admin">เจ้าหน้าที่</option>
+				<option value="user">ผู้ใช้งานทั่วไป</option>
+			</select>
+		</div>
+	</div>
+	<input  name="se_id" value="<?php echo @$getprefix_detail->se_id; ?>">
 </div>
 <script>
 	$('.select2bs4').select2({
