@@ -148,18 +148,14 @@ $html = '
                     <td class="text-highlight">' . $chk_case->se_approve . '</td>
                 </tr>
                 <tr>
-                    <th>เข้าดำเนินการ : </th>
-                    <td class="text-highlight"></td>
-                </tr>
-                <tr>
-                    <th>ปิดงาน : </th>
-                    <td class="text-highlight"></td>
-                </tr>
-                <tr>
                     <th>รูปภาพก่อนแจ้ง : </th>
                     <td class="text-center">
                         ' . $mapImg . '
                     </td>
+                </tr>
+                <tr>
+                    <th>สถานะการดำเนินงาน : </th>
+                    <td class="text-highlight"><input type="checkbox"> เข้าดำเนินงาน <br><input type="checkbox"> ปิดงาน</td>
                 </tr>
             </table>
         </div>

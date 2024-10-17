@@ -116,15 +116,15 @@ $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" .
                 <div class="col-md-6 col-sm-12">
                     <label for="namecall">ชื่อผู้แจ้ง</label>
                     <input type="text" name="namecall" id="namecall" class="form-control" readonly value="<?php
-                  $search = $getdata->my_sql_query($connect, NULL, "employee", "card_key ='" . $chk_case->se_namecall . "'");
-                  if (COUNT($search) == 0) {
-                    $chkName = $chk_case->se_namecall;
-                  } else {
-                    $chkName = getemployee($chk_case->se_namecall);
-                  }
+                                                                                                            $search = $getdata->my_sql_query($connect, NULL, "employee", "card_key ='" . $chk_case->se_namecall . "'");
+                                                                                                            if (COUNT($search) == 0) {
+                                                                                                                $chkName = $chk_case->se_namecall;
+                                                                                                            } else {
+                                                                                                                $chkName = getemployee($chk_case->se_namecall);
+                                                                                                            }
 
-                  echo $chkName;
-                  ?>">
+                                                                                                            echo $chkName;
+                                                                                                            ?>">
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <label for="location">สาขา</label>
@@ -163,15 +163,14 @@ $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" .
 
                     <?php
                     if ($chk_case->pic_before == null) {
-                        echo '<img class="img-thumbnail" src="../../resource/bu/file_pic_now/no-img.png" width="70%">';
+                        echo '<img class="img-thumbnail" src="../../resource/bu/file_pic_now/no-img.png" width="50%">';
                     } else {
-                        echo '<img class="img-thumbnail" src="../../resource/bu/delevymo/' . $chk_case->pic_before . '" width="70%">';
+                        echo '<img class="img-thumbnail" src="../../resource/bu/delevymo/' . $chk_case->pic_before . '" width="50%">';
                     }
                     ?>
                 </div>
 
             </div>
-
             <div class="form-group row">
                 <div class="col-6">
                     <label for="admin">ผู้พิมพ์เอกสาร</label>
@@ -191,9 +190,41 @@ $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" .
             <br>
             <div class="form-group row">
                 <div class="col-6">
+                <div class="form-group row mt-3">
+                        <div class="col-6 text-center">
+                            <label class="control outlined control-checkbox" style="display: inline;">
+                                <input type="checkbox">
+                                <div class="control-indicator" style="height: 20px; width: 20px; display: none"></div>
+                            </label>
+                        </div>
+                        <div class="col-6 text-center">
+                            <label class="control outlined control-checkbox" style="display: inline;">
+                                <input type="checkbox">
+                                <div class="control-indicator" style="height: 20px; width: 20px; display: none"></div>
+                            </label>
+
+                        </div>
+
+                    </div>
                     <label>ผู้ปฏิบัติงาน</label>
                 </div>
                 <div class="col-6">
+                <div class="form-group row mb-3">
+                        <div class="col-6 text-center">
+                            <label class="control outlined control-checkbox" style="display: inline;">&nbsp&nbsp&nbsp เข้าดำเนินงาน
+                                <input type="checkbox">
+                                <div class="control-indicator" style="height: 20px; width: 20px;"></div>
+                            </label>
+                        </div>
+                        <div class="col-6 text-center">
+                            <label class="control outlined control-checkbox" style="display: inline;">&nbsp&nbsp&nbsp  ปิดงาน
+                                <input type="checkbox">
+                                <div class="control-indicator" style="height: 20px; width: 20px;"></div>
+                            </label>
+
+                        </div>
+
+                    </div>
                     <label>ผู้ขอใช้บริการ</label>
                 </div>
             </div>
@@ -206,7 +237,6 @@ $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" .
                     (.........................................................................)
                 </div>
             </div>
-            <br>
             <hr>
 
             <br>
@@ -215,7 +245,8 @@ $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" .
                     <label>หมายเหตุเพิ่มเติม :</label>
                 </div>
                 <div class="col-10">
-                    ..................................................................................................................................................................
+                    .....................................................................................................................................................................................................<br><br>
+                    .....................................................................................................................................................................................................
                 </div>
             </div>
         </div>
