@@ -245,7 +245,7 @@ include_once 'procress/dataSave.php';
         </div>
         <div class="card-body">
             <div class="responsive-data-table">
-                <table id="responsive-data-table-summary" class="table dt-responsive nowrap hover" style="width:100%">
+                <table id="data-list-all" class="table dt-responsive nowrap hover" style="width:100%">
                     <thead class="font-weight-bold text-center">
                         <tr>
                             <td>ลำดับ</td>

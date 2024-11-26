@@ -154,7 +154,7 @@ $html = '
                     </td>
                 </tr>
                 <tr>
-                    <th>สถานะการดำเนินงาน : </th>
+                    <th>สถานะ : </th>
                     <td class="text-highlight"><input type="checkbox"> เข้าดำเนินงาน <br><input type="checkbox"> ปิดงาน</td>
                 </tr>
             </table>

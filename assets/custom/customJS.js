@@ -106,6 +106,17 @@ $(function () {
     scrollY: true,
   });
 
+  $('#data-list-all').DataTable({
+    dom: 'Bfrtip',
+    searching: false,
+    pageLength: 50,
+    
+    buttons: [
+      'colvis',
+      'pageLength'
+    ],
+  });
+
   $('#ForExport').DataTable({
     dom: 'Bfrtip',
     searching: false,

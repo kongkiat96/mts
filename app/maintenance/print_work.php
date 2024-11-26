@@ -1,260 +1,192 @@
-<?php session_start();
-error_reporting(0);
+<?php
+session_start();
+require '../../vendor/autoload.php';
+require '../../core/config.core.php';
+require '../../core/connect.core.php';
+require '../../core/functions.core.php';
+// สร้างตัวแปร mPDF พร้อมกำหนด encoding
+$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8']);
+// กำหนดระยะขอบ (ซ้าย, ขวา, บน, ล่าง)
+$mpdf->SetMargins(2, 2, 5); // ระยะขอบ 15 มม. ด้านซ้าย ขวา และด้านบน
+$mpdf->SetAutoPageBreak(true, 5); // กำหนดการตัดหน้าอัตโนมัติที่ 15 มม. ด้านล่าง
+// ตั้งค่าฟอนต์เพื่อรองรับภาษาไทย
+$mpdf->AddFontDirectory('../../font');
+$mpdf->SetFont('THSarabunNew', '', 12);
 
-require("../../core/config.core.php");
-require("../../core/connect.core.php");
-require("../../core/functions.core.php");
+// เปิดใช้งาน autoScriptToLang
+$mpdf->autoScriptToLang = true;
+$mpdf->autoLangToFont = true;
 
 $getdata = new clear_db();
 $connect = $getdata->my_sql_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
 mysqli_set_charset($connect, "utf8");
 date_default_timezone_set('Asia/Bangkok');
 $system_info = $getdata->my_sql_query($connect, null, 'system_info', null);
 $chk_case = $getdata->my_sql_query($connect, NULL, "building_list", "ticket='" . htmlspecialchars($_GET['key']) . "'");
-?>
 
+if ($chk_case->pic_before == null) {
+    $mapImg = '<img class="img-thumbnail" src="../../resource/bu/file_pic_now/no-img.png" width="40%">';
+} else {
+    $mapImg = '<img class="img-thumbnail" src="../../resource/bu/delevymo/' . $chk_case->pic_before . '" width="40%">';
+}
+
+// เนื้อหา PDF
+$html = '
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="th">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- SLEEK CSS -->
-    <link id="sleek-css" rel="stylesheet" href="../../assets/css/sleek.css" />
-
-
-    <title><?php echo @$card_detail->ticket; ?></title>
-</head>
-<style type="text/css">
-    body {
-        font-size: 16px;
-        -webkit-print-color-adjust: exact;
-    }
-
-    @media print {
-        .footerx {
-            page-break-after: always;
+    <meta charset="UTF-8">
+    <title>ใบงานแจ้งซ่อมฝ่ายอาคาร (ช่าง)</title>
+    <style>
+        body { 
+            font-family: "THSarabunNew", sans-serif; 
+            margin: 20px; 
+            font-size: 14px;
         }
-
-    }
-
-    strong {
-        color: black;
-    }
-
-    .card-footer {
-        background-color: #fffcfca6;
-    }
-</style>
-
-<!--   onLoad="javascript:window.print();" -->
-
-<body onLoad="javascript:window.print();">
-
-    <div class="card broder-success">
+        .card { 
+            border: 1px solid #0a446c; 
+            border-radius: 5px; 
+            padding: 15px; 
+        }
+        .card-header { 
+            background-color: #0a446c; 
+            color: white; 
+            padding: 10px; 
+            text-align: center; 
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-size: 1em;
+            text-align: right;
+        }
+        .text-highlight { 
+            font-size: 0.9em; 
+            color: #000; 
+            margin: 0 5px;
+            line-height: 1.5; 
+        }
+        .text-center { text-align: center; }
+        .img-thumbnail { 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            padding: 5px; 
+            max-width: 40%;
+            height: auto;
+        }
+        .footer-label { 
+            margin-top: 10px; 
+            text-align: center; 
+        }
+        .remark { 
+            border-top: 1px solid #000; 
+            padding-top: 10px; 
+            margin-top: 20px;
+        }
+        .signature-line {
+            border-bottom: 1px dotted #000;
+            width: 80%;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
         <div class="card-header">
-            <h5><b> แบบฟอร์มใบงานฝ่ายอาคาร</b></h5>
+            <h3><b>ใบงานแจ้งซ่อมฝ่ายอาคาร (ช่าง)</b></h3>
         </div>
         <div class="card-body">
-
-            <div class="form-group row">
-                <div class="col-6">
-                    <label for="ticket">Ticket Number</label>
-                    <input type="text" class="form-control" id="ticket" value="<?php echo @$chk_case->ticket; ?>" readonly />
-                </div>
-                <div class="col-6">
-                    <label for="asset_code">รหัสสินทรัพย์</label>
-                    <input type="text" id="asset_code" class="form-control" disabled value="<?php echo $chk_case->as_code; ?>">
-
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-6">
-                    <label for="user">ผู้แจ้ง</label>
-                    <input type="text" class="form-control" id="user" value="<?php echo @getemployee($chk_case->user_key); ?>" readonly />
-                </div>
-                <div class="col-6">
-                    <label for="date">วันที่แจ้งปัญหา</label>
-                    <input type="text" id="date" class="form-control" disabled value="<?php echo @dateConvertor($chk_case->date); ?>">
-
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-6">
-                    <label for="service">หมวดหมู่</label>
-                    <select name="show_case_maintenance" id="show_case_maintenance" class="form-control" disabled>
-                        <?php
-                        $select_service = $getdata->my_sql_select($connect, NULL, "service", "se_id");
-                        while ($show_service = mysqli_fetch_object($select_service)) {
-                            if ($show_service->se_id == $chk_case->se_id) {
-                                echo '<option value="' . $show_service->se_id . '">' . $show_service->se_name . '</option>';
-                            }
-                        }
-                        ?>
-                    </select>
-
-                </div>
-                <div class="col-6">
-                    <label for="service_list">ปัญหาที่พบ</label>
-                    <select name="show_case_maintenance" id="show_case_maintenance" class="form-control" disabled>
-                        <?php
-                        $select_service_list = $getdata->my_sql_select($connect, NULL, "service_list", "se_li_id");
-                        while ($show_service_list = mysqli_fetch_object($select_service_list)) {
-                            if ($show_service_list->se_li_id == $chk_case->se_li_id) {
-                                echo '<option value="' . $show_service_list->se_li_id . '">' . $show_service_list->se_li_name . '</option>';
-                            }
-                        }
-                        ?>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="form-group row">
-                <div class="col-md-6 col-sm-12">
-                    <label for="namecall">ชื่อผู้แจ้ง</label>
-                    <input type="text" name="namecall" id="namecall" class="form-control" readonly value="<?php
-                                                                                                            $search = $getdata->my_sql_query($connect, NULL, "employee", "card_key ='" . $chk_case->se_namecall . "'");
-                                                                                                            if (COUNT($search) == 0) {
-                                                                                                                $chkName = $chk_case->se_namecall;
-                                                                                                            } else {
-                                                                                                                $chkName = getemployee($chk_case->se_namecall);
-                                                                                                            }
-
-                                                                                                            echo $chkName;
-                                                                                                            ?>">
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <label for="location">สาขา</label>
-                    <input type="text" name="location" id="location" class="form-control" readonly value="<?php echo @prefixbranch($chk_case->se_location); ?>">
-                </div>
-
-
-            </div>
-
-            <?php
-            if ($chk_case->se_other != NULL) { ?>
-                <div class="form-group row ">
-
-                    <div class="col-12">
-                        <label for="other">รายละเอียดเพิ่มเติม</label>
-                        <textarea name="other" id="other" class="form-control" rows="5" readonly><?php echo $chk_case->se_other; ?></textarea>
-                    </div>
-
-                </div><?php } ?>
-            <?php
-            if ($chk_case->se_approve != NULL) { ?>
-                <div class="form-group row ">
-
-                    <div class="col-12">
-                        <label for="approve">ผู้อนุมัติ</label>
-                        <input name="approve" id="approve" class="form-control" value="<?php echo $chk_case->se_approve; ?>" readonly></input>
-                    </div>
-
-                </div><?php } ?>
-
-            <div class="form-group row ">
-                <div class="col-3">
-                    <label for="">รูปภาพก่อนแจ้ง</label>
-                </div>
-                <div class="col-9 text-center">
-
-                    <?php
-                    if ($chk_case->pic_before == null) {
-                        echo '<img class="img-thumbnail" src="../../resource/bu/file_pic_now/no-img.png" width="50%">';
-                    } else {
-                        echo '<img class="img-thumbnail" src="../../resource/bu/delevymo/' . $chk_case->pic_before . '" width="50%">';
-                    }
-                    ?>
-                </div>
-
-            </div>
-            <div class="form-group row">
-                <div class="col-6">
-                    <label for="admin">ผู้พิมพ์เอกสาร</label>
-                    <input type="text" class="form-control" id="admin" value="<?php echo @getemployee($_SESSION['ukey']); ?>" readonly />
-                </div>
-                <div class="col-6">
-                    <?php $datetime = date("Y-m-d H:i:s"); ?>
-                    <label for="date">วันที่พิมพ์เอกสาร</label>
-                    <input type="text" id="date" class="form-control" disabled value="<?php echo @dateTimeConvertor($datetime); ?>">
-
-                </div>
-
-            </div>
-
+            <table>
+                <tr>
+                    <th>Ticket Number : </th>
+                    <td class="text-highlight">' . $chk_case->ticket . '</td>
+                </tr>
+                <tr>
+                    <th>รหัสสินทรัพย์ : </th>
+                    <td class="text-highlight">' . $chk_case->as_code . '</td>
+                </tr>
+                <tr>
+                    <th>ผู้แจ้ง : </th>
+                    <td class="text-highlight">' . getemployee($chk_case->user_key) . '</td>
+                </tr>
+                <tr>
+                    <th>วันที่แจ้งปัญหา : </th>
+                    <td class="text-highlight">' . dateConvertor($chk_case->date) . '</td>
+                </tr>
+                <tr>
+                    <th>หมวดหมู่ : </th>
+                    <td class="text-highlight">' . service($chk_case->se_id) . '</td>
+                </tr>
+                <tr>
+                    <th>ปัญหาที่พบ : </th>
+                    <td class="text-highlight">' . prefixConvertorServiceList($chk_case->se_li_id) . '</td>
+                </tr>
+                <tr>
+                    <th>ชื่อผู้แจ้ง : </th>
+                    <td class="text-highlight">' . getemployee($chk_case->se_namecall) . '</td>
+                </tr>
+                <tr>
+                    <th>สาขา : </th>
+                    <td class="text-highlight">' . prefixbranch($chk_case->se_location) . '</td>
+                </tr>
+                <tr>
+                    <th>รายละเอียดเพิ่มเติม : </th>
+                    <td class="text-highlight">' . $chk_case->se_other . '</td>
+                </tr>
+                <tr>
+                    <th>ผู้อนุมัติ : </th>
+                    <td class="text-highlight">' . $chk_case->se_approve . '</td>
+                </tr>
+                <tr>
+                    <th>รูปภาพก่อนแจ้ง : </th>
+                    <td class="text-center">
+                        ' . $mapImg . '
+                    </td>
+                </tr>
+                <tr>
+                    <th>สถานะ : </th>
+                    <td class="text-highlight"><input type="checkbox"> เข้าดำเนินงาน <br><input type="checkbox"> ปิดงาน</td>
+                </tr>
+            </table>
         </div>
-        <div class="card-footer text-center">
-            <br>
-            <div class="form-group row">
-                <div class="col-6">
-                <div class="form-group row mt-3">
-                        <div class="col-6 text-center">
-                            <label class="control outlined control-checkbox" style="display: inline;">
-                                <input type="checkbox">
-                                <div class="control-indicator" style="height: 20px; width: 20px; display: none"></div>
-                            </label>
-                        </div>
-                        <div class="col-6 text-center">
-                            <label class="control outlined control-checkbox" style="display: inline;">
-                                <input type="checkbox">
-                                <div class="control-indicator" style="height: 20px; width: 20px; display: none"></div>
-                            </label>
-
-                        </div>
-
-                    </div>
+        <div class="card-footer text-center footer-label">
+            <div class="form-group">
+                <div style="width: 50%; float: left;">
                     <label>ผู้ปฏิบัติงาน</label>
+                    <div class="signature-line" style="margin-top: 50px"></div>
                 </div>
-                <div class="col-6">
-                <div class="form-group row mb-3">
-                        <div class="col-6 text-center">
-                            <label class="control outlined control-checkbox" style="display: inline;">&nbsp&nbsp&nbsp เข้าดำเนินงาน
-                                <input type="checkbox">
-                                <div class="control-indicator" style="height: 20px; width: 20px;"></div>
-                            </label>
-                        </div>
-                        <div class="col-6 text-center">
-                            <label class="control outlined control-checkbox" style="display: inline;">&nbsp&nbsp&nbsp  ปิดงาน
-                                <input type="checkbox">
-                                <div class="control-indicator" style="height: 20px; width: 20px;"></div>
-                            </label>
-
-                        </div>
-
-                    </div>
+                <div style="width: 50%; float: right;">
                     <label>ผู้ขอใช้บริการ</label>
+                    <div class="signature-line" style="margin-top: 50px"></div>
                 </div>
             </div>
-            <br>
-            <div class="form-group row">
-                <div class="col-6">
-                    (.........................................................................)
-                </div>
-                <div class="col-6">
-                    (.........................................................................)
-                </div>
-            </div>
-            <hr>
-
-            <br>
-            <div class="form-group row text-left ">
-                <div class="col-2 text-right">
-                    <label>หมายเหตุเพิ่มเติม :</label>
-                </div>
-                <div class="col-10">
-                    .....................................................................................................................................................................................................<br><br>
-                    .....................................................................................................................................................................................................
-                </div>
+            <div style="clear: both;"></div>
+            <div class="remark">
+                <label>หมายเหตุเพิ่มเติม:</label>
+                <p style="border-bottom: 1px dotted #000; padding-bottom: 20px;"></p>
+                <p style="border-bottom: 1px dotted #000; padding-bottom: 20px;"></p>
             </div>
         </div>
     </div>
-
-
-
 </body>
-<script src="../../assets/js/sleek.bundle.js"></script>
-
 </html>
+
+';
+
+$footer = 'ผู้พิมพ์เอกสาร : ' . getemployee($_SESSION['ukey']) . ', วันที่ : ' . date('d/m/Y');
+// เขียนเนื้อหาไปยัง PDF
+$mpdf->WriteHTML($html);
+$mpdf->SetFooter($footer);
+// สร้าง PDF และดาวน์โหลด
+$mpdf->Output('documentCase_' . $chk_case->ticket . '.pdf', 'I'); // 'I' สำหรับแสดงในเบราว์เซอร์, 'D' สำหรับดาวน์โหลด
