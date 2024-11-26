@@ -100,8 +100,8 @@ $get_admin = $getdata->my_sql_query($connect, NULL, "user", "user_key = '" . $_S
             <label for="namecall">ชื่อผู้แจ้ง</label>
             <?php
             $search = $getdata->my_sql_query($connect, NULL, "employee", "card_key ='" . $chk_case->se_namecall . "'");
-            if (COUNT($search) == 0) {
-                $chkName = $chk_case->se_namecall;
+            if (!$search || !is_array($search) || COUNT($search) == 0) {
+                $chkName = getemployee($chk_case->se_namecall);
             } else {
                 $chkName = getemployee($chk_case->se_namecall);
             }

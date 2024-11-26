@@ -106,14 +106,16 @@ $(function () {
     scrollY: true,
   });
 
-  $('#data-list-all').DataTable({
+  $('#data-all').DataTable({
     dom: 'Bfrtip',
-    searching: false,
+    scrollX: true,
+    searching: true,
+    aLengthMenu: [[50, 100, 150, 200, -1], [50, 100, 150, 200, "All"]],
     pageLength: 50,
-    
     buttons: [
       'colvis',
       'pageLength'
+
     ],
   });
 

@@ -35,7 +35,7 @@ if (isset($_POST['save_casebu'])) {
             $chkManager =  $getdata->my_sql_query($connect, NULL, "manager", "user_key = '" . $_SESSION['ukey'] . "' LIMIT 1");
         }
         
-        $mapBranch = !empty($_POST['location']) ? htmlspecialchars($_POST['location']) : $_POST['department'];
+        $mapBranch = !empty($_POST['location']) ? $_POST['location'] : getIDBranch(trim($_POST['gt_department']));
 
         if (COUNT($chkManager) == 0) {
             $getdata->my_sql_insert($connect, "building_list", "
@@ -234,7 +234,6 @@ if (isset($_POST['save_approve'])) {
       ticket='" . htmlspecialchars($_POST['card_key']) . "'"
         );
 
-
         // ส่งข้อมูลเข้าไลน์
         $ticket = $_POST['ticket'];
         $name_admin = $_POST['admin'];
@@ -242,7 +241,7 @@ if (isset($_POST['save_approve'])) {
         $date_send = date('d/m/Y');
         $time_send = date("H:i");
         $namecall = @getemployee($_POST['namecall']);
-        $location = @prefixbranch($_POST['location']);
+        $location = !empty($_POST['location']) ? $_POST['location'] : '';
         $detail = $_POST['detail'];
         $line_token = $getalert->alert_line_token; // Token
         $line_text = "
@@ -250,7 +249,7 @@ if (isset($_POST['save_approve'])) {
          ------------------------
          Ticket : $ticket
          ------------------------
-         ผู้ดำเนินการ : $name_admin
+         ผู้อนุมัติ : $name_admin
          สถานะ :  อนุมัติจากผู้บังคับบัญชา
          ผู้แจ้ง : $namecall
          สาขา : $location

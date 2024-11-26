@@ -21,7 +21,8 @@ $system_info = $getdata->my_sql_query($connect, null, 'system_info', null);
 date_default_timezone_set('Asia/Bangkok');
 
 //require("../core/online.core.php");
-
+$stmt = $connect->prepare("CALL setAutoUserApprove()");
+$stmt->execute();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,6 +76,10 @@ date_default_timezone_set('Asia/Bangkok');
       position: relative;
       z-index: 2;
       margin-right: 10px;
+    }
+
+    .dataTables_filter {
+      float: right;
     }
   </style>
 

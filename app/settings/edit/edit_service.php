@@ -32,7 +32,7 @@ $getprefix_detail = $getdata->my_sql_query($connect, NULL, "service", "se_id='" 
 			</select>
 		</div>
 	</div>
-	<input  name="se_id" value="<?php echo @$getprefix_detail->se_id; ?>">
+	<input  name="se_id" value="<?php echo @$getprefix_detail->se_id; ?>" hidden>
 </div>
 <script>
 	$('.select2bs4').select2({

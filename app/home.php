@@ -184,7 +184,7 @@ echo @$alert;
                         <div class="col-12">
                             <label for="approve">ผู้อนุมัติ</label>
                             <!-- <input type="text" class="form-control" name="approve" id="approve"> -->
-                            <input type="text" class="form-control input-sm" id="approve" name="approve">
+                            <input type="text" class="form-control input-sm" id="approve" name="approve" readonly>
                             <div class="invalid-feedback">
                                 ระบุ สาขา.
                             </div>
